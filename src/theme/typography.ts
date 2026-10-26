@@ -1,10 +1,17 @@
 import { TextStyle } from 'react-native';
 
-// Kiểu chữ theo Figma (Roboto). Tạm dùng font hệ thống của iOS (San Francisco)
+// Tên font đã đăng ký trong _layout.tsx (Roboto cho chữ thường, Playfair cho logo)
+export const fonts = {
+  regular: 'Roboto_400Regular',
+  medium: 'Roboto_500Medium',
+  logo: 'PlayfairDisplay_800ExtraBold',
+} as const;
+
+// Kiểu chữ theo Figma. Không đặt fontWeight vì mỗi độ đậm là một file font riêng
 export const typography = {
-  title: { fontSize: 24, lineHeight: 36, fontWeight: '800' },
-  section: { fontSize: 18, lineHeight: 28, fontWeight: '500' },
-  body: { fontSize: 16, lineHeight: 24, fontWeight: '400' },
-  caption: { fontSize: 14, lineHeight: 20, fontWeight: '400' },
-  tab: { fontSize: 12, lineHeight: 18, fontWeight: '400' },
+  title: { fontFamily: fonts.logo, fontSize: 24, lineHeight: 36 },
+  section: { fontFamily: fonts.medium, fontSize: 18, lineHeight: 28 },
+  body: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24 },
+  caption: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 20 },
+  tab: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 18 },
 } satisfies Record<string, TextStyle>;
