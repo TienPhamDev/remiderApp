@@ -71,8 +71,7 @@ export default function TaskInfoScreen() {
 
   const confirmRemove = async () => {
     setConfirmDelete(false);
-    await removeTask(task.id);
-    router.back();
+    if (await removeTask(task.id)) router.back(); // lỗi thì ở lại màn hình này
   };
 
   return (
@@ -128,7 +127,9 @@ export default function TaskInfoScreen() {
             <InfoRow icon="bell" label="Notify me">
               <Switch
                 value={task.notify}
-                onValueChange={(notify) => updateTask(task.id, { notify })}
+                onValueChange={(notify) => {
+                  updateTask(task.id, { notify });
+                }}
                 trackColor={{ true: colors.primary, false: colors.border }}
                 thumbColor={colors.text}
               />

@@ -31,12 +31,9 @@ export default function CreateTaskScreen() {
   const submit = async () => {
     if (!canAdd) return;
     setSaving(true);
-    try {
-      await addTask({ title: title.trim(), note: '', category, dueAt, priority, notify: true });
-      router.back();
-    } finally {
-      setSaving(false); // lỗi lưu thì cho bấm lại
-    }
+    const ok = await addTask({ title: title.trim(), note: '', category, dueAt, priority, notify: true });
+    if (ok) router.back();
+    else setSaving(false); // lỗi lưu thì giữ sheet mở và cho bấm lại
   };
 
   // Đổi ngày giữ nguyên giờ, và ngược lại
