@@ -9,6 +9,7 @@ export const colors = {
 
   // Viền
   border: '#3A3A3A',
+  dayBorder: '#4F4F4F', // viền ô ngày trên lịch
 
   // Màu nhấn
   primary: '#9B60F7', // tím: nút chính, nút Search
