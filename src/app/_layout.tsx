@@ -5,12 +5,12 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { colors, fonts, typography } from '../theme';
+import { colors, fonts } from '../theme';
 
 // Giữ màn hình splash cho đến khi font tải xong
 SplashScreen.preventAutoHideAsync();
 
-// Layout gốc: Stack tối màu theo theme Listodo
+// Layout gốc: Stack tối màu theo theme Listodo, các màn hình chính nằm trong (tabs)
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     [fonts.regular]: Roboto_400Regular,
@@ -28,15 +28,8 @@ export default function RootLayout() {
   return (
     <>
       <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: colors.actionBar },
-          headerTintColor: colors.text,
-          headerTitleStyle: { ...typography.title, fontSize: 22 },
-          contentStyle: { backgroundColor: colors.background },
-        }}
-      >
-        <Stack.Screen name="index" options={{ title: 'Listodo' }} />
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
+        <Stack.Screen name="(tabs)" />
       </Stack>
     </>
   );
