@@ -3,7 +3,7 @@ import { colors, radius, spacing, typography } from '../theme';
 import { Icon } from './Icon';
 
 type Props = {
-  categories: string[];
+  categories: { value: string; label: string }[];
   selected: string;
   onSelect: (category: string) => void;
 };
@@ -16,15 +16,15 @@ export function CategoryChips({ categories, selected, onSelect }: Props) {
         <Icon name="add" />
       </Pressable>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
-        {categories.map((category) => {
-          const active = category === selected;
+        {categories.map(({ value, label }) => {
+          const active = value === selected;
           return (
             <Pressable
-              key={category}
-              onPress={() => onSelect(category)}
+              key={value}
+              onPress={() => onSelect(value)}
               style={[styles.chip, active && styles.chipActive]}
             >
-              <Text style={[styles.chipText, active && styles.chipTextActive]}>{category}</Text>
+              <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
             </Pressable>
           );
         })}

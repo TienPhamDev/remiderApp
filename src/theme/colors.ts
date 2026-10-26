@@ -21,6 +21,14 @@ export const colors = {
   textMuted: '#616161', // ngày, nhãn phụ
   textDone: '#7B7B7B', // việc đã hoàn thành (gạch ngang)
 
+  // Ô nhập, lớp phủ, độ ưu tiên
+  input: '#191919',
+  placeholder: '#4F4F4F',
+  overlay: 'rgba(0, 0, 0, 0.8)',
+  priorityLow: '#3DDC6B',
+  priorityMedium: '#F8CD7A',
+  priorityHigh: '#FF5959',
+
   // Trạng thái
   danger: '#FF5959', // cờ ưu tiên, xóa
   dangerSoft: 'rgba(255, 89, 89, 0.15)', // nền khi vuốt để xóa

@@ -12,7 +12,12 @@ export type IconName =
   | 'calendar'
   | 'category'
   | 'graph'
-  | 'setting';
+  | 'setting'
+  | 'close'
+  | 'chevron-down'
+  | 'chevron-left'
+  | 'clock'
+  | 'bell';
 
 type Props = {
   name: IconName;
@@ -78,6 +83,18 @@ export function Icon({ name, size = 24, color = colors.text }: Props) {
           <Path d="M21.2 15.9A10 10 0 1 1 8 2.8" {...stroke} />
           <Path d="M22 12A10 10 0 0 0 12 2v10z" {...stroke} />
         </>
+      )}
+      {name === 'close' && <Path d="M6 6l12 12M18 6L6 18" {...stroke} />}
+      {name === 'chevron-down' && <Path d="M6 9l6 6 6-6" {...stroke} />}
+      {name === 'chevron-left' && <Path d="M15 5l-7 7 7 7" {...stroke} />}
+      {name === 'clock' && (
+        <>
+          <Circle cx={12} cy={12} r={10} {...stroke} />
+          <Path d="M12 6.5V12l3.5 2" {...stroke} />
+        </>
+      )}
+      {name === 'bell' && (
+        <Path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0" {...stroke} />
       )}
       {name === 'setting' && (
         <>

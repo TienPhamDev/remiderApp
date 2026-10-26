@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { TasksProvider } from '../context/TasksContext';
 import { colors, fonts } from '../theme';
 
 // Giữ màn hình splash cho đến khi font tải xong
@@ -26,11 +27,17 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
-    <>
+    <TasksProvider>
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
         <Stack.Screen name="(tabs)" />
+        {/* Màn hình tạo việc hiện như bottom sheet phủ lên Home */}
+        <Stack.Screen
+          name="create"
+          options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }}
+        />
+        <Stack.Screen name="task/[id]" />
       </Stack>
-    </>
+    </TasksProvider>
   );
 }

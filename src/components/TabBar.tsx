@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { BottomTabBarProps } from 'expo-router/js-tabs';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, typography } from '../theme';
@@ -13,6 +14,8 @@ const TABS: Record<string, { label: string; icon: IconName }> = {
 
 // Thanh tab dưới: 2 tab, nút + nổi ở giữa, 2 tab. Tab đang chọn có gạch vàng
 export function TabBar({ state, navigateToTab, insets }: BottomTabBarProps) {
+  const router = useRouter();
+
   const renderTab = (index: number) => {
     const route = state.routes[index];
     const tab = TABS[route.name];
@@ -38,8 +41,7 @@ export function TabBar({ state, navigateToTab, insets }: BottomTabBarProps) {
       {renderTab(0)}
       {renderTab(1)}
       <View style={styles.fabSlot}>
-        {/* TODO: mở màn hình tạo việc mới */}
-        <Pressable style={styles.fab} accessibilityLabel="Add task">
+        <Pressable style={styles.fab} onPress={() => router.push('/create')} accessibilityLabel="Add task">
           <Icon name="add" size={32} />
         </Pressable>
       </View>

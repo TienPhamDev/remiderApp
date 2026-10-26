@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -5,41 +6,32 @@ import { AppHeader } from '../../components/AppHeader';
 import { CategoryChips } from '../../components/CategoryChips';
 import { SearchBar } from '../../components/SearchBar';
 import { TaskItem } from '../../components/TaskItem';
+import { CATEGORIES, CATEGORY_LABELS } from '../../constants/task';
+import { useTasks } from '../../context/TasksContext';
 import { colors, maxContentWidth, spacing, typography } from '../../theme';
-import { Task } from '../../types/task';
 import { compareDay } from '../../utils/date';
 
 const ALL = 'All Task';
-const CATEGORIES = [ALL, '👜 Work', 'Personal'];
-
-// Ngày cách hôm nay `offset` ngày
-function daysFromNow(offset: number): Date {
-  const date = new Date();
-  date.setDate(date.getDate() + offset);
-  return date;
-}
-
-// Dữ liệu mẫu để xem giao diện (sẽ thay bằng dữ liệu lưu trên máy)
-const SAMPLE_TASKS: Task[] = [
-  { id: '1', title: 'Doing housework', date: daysFromNow(1), category: 'Personal', done: false },
-  { id: '2', title: 'Make a studying plan', date: daysFromNow(2), category: 'Personal', done: false },
-  { id: '3', title: 'Do groceries', date: daysFromNow(0), category: 'Personal', done: false },
-  { id: '4', title: 'Decorate room', date: daysFromNow(0), category: 'Personal', done: false },
-  { id: '5', title: 'Prepare music', date: daysFromNow(0), category: '👜 Work', done: false },
-  { id: '6', title: 'Your todo task list', date: daysFromNow(-1), category: '👜 Work', done: true },
-  { id: '7', title: 'Your todo task list', date: daysFromNow(-2), category: 'Personal', done: false },
+const CHIPS = [
+  { value: ALL, label: ALL },
+  ...CATEGORIES.map((value) => ({ value, label: CATEGORY_LABELS[value] })),
 ];
 
 // Màn hình chính: tìm kiếm, chip danh mục, danh sách việc theo Future / Today / Previous
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const [tasks, setTasks] = useState(SAMPLE_TASKS);
+  const router = useRouter();
+  const { tasks, loading, updateTask } = useTasks();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState(ALL);
 
   // Đảo trạng thái hoàn thành
-  const toggleTask = (id: string) =>
-    setTasks((current) => current.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+  const toggleTask = (id: number) => {
+    const task = tasks.find((t) => t.id === id);
+    if (task) updateTask(id, { done: !task.done });
+  };
+
+  const openTask = (id: number) => router.push({ pathname: '/task/[id]', params: { id: String(id) } });
 
   // Lọc theo từ khóa và danh mục, rồi chia nhóm theo ngày
   const sections = useMemo(() => {
@@ -49,9 +41,9 @@ export default function HomeScreen() {
       (t) => (category === ALL || t.category === category) && t.title.toLowerCase().includes(text),
     );
     return [
-      { title: 'Future', items: visible.filter((t) => compareDay(t.date, today) > 0) },
-      { title: 'Today task', items: visible.filter((t) => compareDay(t.date, today) === 0) },
-      { title: 'Previous', items: visible.filter((t) => compareDay(t.date, today) < 0) },
+      { title: 'Future', items: visible.filter((t) => compareDay(t.dueAt, today) > 0) },
+      { title: 'Today task', items: visible.filter((t) => compareDay(t.dueAt, today) === 0) },
+      { title: 'Previous', items: visible.filter((t) => compareDay(t.dueAt, today) < 0) },
     ].filter((section) => section.items.length > 0);
   }, [tasks, query, category]);
 
@@ -66,15 +58,17 @@ export default function HomeScreen() {
         {/* Nội dung căn giữa, giới hạn bề rộng để đẹp trên iPad */}
         <View style={styles.content}>
           <SearchBar value={query} onChangeText={setQuery} />
-          <CategoryChips categories={CATEGORIES} selected={category} onSelect={setCategory} />
+          <CategoryChips categories={CHIPS} selected={category} onSelect={setCategory} />
 
-          {sections.length === 0 && <Text style={styles.empty}>No tasks found</Text>}
+          {!loading && sections.length === 0 && (
+            <Text style={styles.empty}>{tasks.length === 0 ? 'No tasks yet. Tap + to add one' : 'No tasks found'}</Text>
+          )}
 
           {sections.map((section) => (
             <View key={section.title} style={styles.section}>
               <Text style={styles.sectionTitle}>{section.title}</Text>
               {section.items.map((task) => (
-                <TaskItem key={task.id} task={task} onToggle={toggleTask} />
+                <TaskItem key={task.id} task={task} onToggle={toggleTask} onPress={openTask} />
               ))}
             </View>
           ))}

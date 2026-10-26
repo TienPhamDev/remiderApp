@@ -1,18 +1,20 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing, typography } from '../theme';
+import { PRIORITY_COLORS } from '../constants/task';
 import { Task } from '../types/task';
 import { formatDate } from '../utils/date';
 import { Icon } from './Icon';
 
 type Props = {
   task: Task;
-  onToggle: (id: string) => void;
+  onToggle: (id: number) => void;
+  onPress: (id: number) => void;
 };
 
-// Thẻ một việc: ô tròn hoàn thành, tiêu đề, ngày và cờ
-export function TaskItem({ task, onToggle }: Props) {
+// Thẻ một việc: ô tròn hoàn thành, tiêu đề, ngày và cờ ưu tiên. Bấm vào thẻ để xem chi tiết
+export function TaskItem({ task, onToggle, onPress }: Props) {
   return (
-    <View style={styles.card}>
+    <Pressable style={styles.card} onPress={() => onPress(task.id)}>
       <Pressable
         onPress={() => onToggle(task.id)}
         hitSlop={8}
@@ -26,10 +28,10 @@ export function TaskItem({ task, onToggle }: Props) {
         <Text style={[styles.title, task.done && styles.titleDone]} numberOfLines={1}>
           {task.title}
         </Text>
-        <Text style={styles.date}>{formatDate(task.date)}</Text>
+        <Text style={styles.date}>{formatDate(task.dueAt)}</Text>
       </View>
-      <Icon name="flag" color={colors.danger} />
-    </View>
+      <Icon name="flag" color={PRIORITY_COLORS[task.priority]} />
+    </Pressable>
   );
 }
 
