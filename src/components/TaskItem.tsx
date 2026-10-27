@@ -4,16 +4,18 @@ import { PRIORITY_COLORS } from '../constants/task';
 import { Task } from '../types/task';
 import { formatDate } from '../utils/date';
 import { Icon } from './Icon';
+import { SwipeToDelete } from './SwipeToDelete';
 
 type Props = {
   task: Task;
   onToggle: (id: number) => void;
   onPress: (id: number) => void;
+  onDelete?: (id: number) => void; // có thì cho vuốt thẻ để xóa
 };
 
 // Thẻ một việc: ô tròn hoàn thành, tiêu đề, ngày và cờ ưu tiên. Bấm vào thẻ để xem chi tiết
-export function TaskItem({ task, onToggle, onPress }: Props) {
-  return (
+export function TaskItem({ task, onToggle, onPress, onDelete }: Props) {
+  const card = (
     <Pressable style={styles.card} onPress={() => onPress(task.id)}>
       <Pressable
         onPress={() => onToggle(task.id)}
@@ -32,6 +34,13 @@ export function TaskItem({ task, onToggle, onPress }: Props) {
       </View>
       <Icon name="flag" color={PRIORITY_COLORS[task.priority]} />
     </Pressable>
+  );
+
+  if (!onDelete) return card;
+  return (
+    <SwipeToDelete onDelete={() => onDelete(task.id)} label={`Delete ${task.title}`}>
+      {card}
+    </SwipeToDelete>
   );
 }
 

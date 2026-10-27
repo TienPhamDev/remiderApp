@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CalendarGrid } from '../../components/CalendarGrid';
 import { DateHeader } from '../../components/DateHeader';
+import { ConfirmDeleteModal } from '../../components/ConfirmDeleteModal';
 import { TaskItem } from '../../components/TaskItem';
 import { useTasks } from '../../context/TasksContext';
 import { colors, maxContentWidth, spacing, typography } from '../../theme';
@@ -13,7 +14,7 @@ import { addMonths, compareDay } from '../../utils/date';
 export default function CalendarScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { tasks, updateTask } = useTasks();
+  const { tasks, updateTask, removeTask } = useTasks();
   const [selected, setSelected] = useState(() => new Date());
 
   const dayTasks = tasks.filter((t) => compareDay(t.dueAt, selected) === 0);
@@ -22,6 +23,13 @@ export default function CalendarScreen() {
   const toggleTask = (id: number) => {
     const task = tasks.find((t) => t.id === id);
     if (task) updateTask(id, { done: !task.done });
+  };
+
+  // Vuốt để xóa: hỏi xác nhận trước khi xóa thật
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const confirmDelete = () => {
+    if (deletingId !== null) removeTask(deletingId);
+    setDeletingId(null);
   };
 
   const openTask = (id: number) => router.push({ pathname: '/task/[id]', params: { id: String(id) } });
@@ -42,11 +50,12 @@ export default function CalendarScreen() {
             <Text style={styles.sectionTitle}>Your Task</Text>
             {dayTasks.length === 0 && <Text style={styles.empty}>No tasks on this day</Text>}
             {dayTasks.map((task) => (
-              <TaskItem key={task.id} task={task} onToggle={toggleTask} onPress={openTask} />
+              <TaskItem key={task.id} task={task} onToggle={toggleTask} onPress={openTask} onDelete={setDeletingId} />
             ))}
           </View>
         </View>
       </ScrollView>
+      <ConfirmDeleteModal visible={deletingId !== null} onCancel={() => setDeletingId(null)} onConfirm={confirmDelete} />
     </View>
   );
 }

@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader } from '../../components/AppHeader';
 import { CategoryChips } from '../../components/CategoryChips';
 import { SearchBar } from '../../components/SearchBar';
+import { ConfirmDeleteModal } from '../../components/ConfirmDeleteModal';
 import { TaskItem } from '../../components/TaskItem';
 import { useTasks } from '../../context/TasksContext';
 import { colors, maxContentWidth, spacing, typography } from '../../theme';
@@ -16,7 +17,7 @@ const ALL = 'All Task';
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { tasks, categories, loading, updateTask } = useTasks();
+  const { tasks, categories, loading, updateTask, removeTask } = useTasks();
   const [query, setQuery] = useState('');
   const [selectedCategory, setCategory] = useState(ALL);
 
@@ -28,6 +29,13 @@ export default function HomeScreen() {
   const toggleTask = (id: number) => {
     const task = tasks.find((t) => t.id === id);
     if (task) updateTask(id, { done: !task.done });
+  };
+
+  // Vuốt để xóa: hỏi xác nhận trước khi xóa thật
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const confirmDelete = () => {
+    if (deletingId !== null) removeTask(deletingId);
+    setDeletingId(null);
   };
 
   const openTask = (id: number) => router.push({ pathname: '/task/[id]', params: { id: String(id) } });
@@ -67,12 +75,13 @@ export default function HomeScreen() {
             <View key={section.title} style={styles.section}>
               <Text style={styles.sectionTitle}>{section.title}</Text>
               {section.items.map((task) => (
-                <TaskItem key={task.id} task={task} onToggle={toggleTask} onPress={openTask} />
+                <TaskItem key={task.id} task={task} onToggle={toggleTask} onPress={openTask} onDelete={setDeletingId} />
               ))}
             </View>
           ))}
         </View>
       </ScrollView>
+      <ConfirmDeleteModal visible={deletingId !== null} onCancel={() => setDeletingId(null)} onConfirm={confirmDelete} />
     </View>
   );
 }
