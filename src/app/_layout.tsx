@@ -36,6 +36,10 @@ export default function RootLayout() {
           name="create"
           options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }}
         />
+        <Stack.Screen
+          name="category-form"
+          options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }}
+        />
         <Stack.Screen name="task/[id]" />
       </Stack>
     </TasksProvider>

@@ -2,15 +2,21 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing, typography } from '../theme';
 import { Icon } from './Icon';
 
-// Thanh trên cùng: logo "Listodo" kèm nhãn "to-do" và nút cài đặt
-export function AppHeader() {
+type Props = {
+  title?: string; // không truyền thì hiện logo "Listodo" kèm nhãn "to-do"
+};
+
+// Thanh trên cùng: logo (hoặc tên màn hình) và nút cài đặt
+export function AppHeader({ title }: Props) {
   return (
     <View style={styles.bar}>
       <View>
-        <Text style={styles.logo}>Listodo</Text>
-        <View style={styles.sticker}>
-          <Text style={styles.stickerText}>to-do</Text>
-        </View>
+        <Text style={styles.logo}>{title ?? 'Listodo'}</Text>
+        {!title && (
+          <View style={styles.sticker}>
+            <Text style={styles.stickerText}>to-do</Text>
+          </View>
+        )}
       </View>
       <View style={styles.settings}>
         <Icon name="setting" />

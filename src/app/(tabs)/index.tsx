@@ -6,24 +6,23 @@ import { AppHeader } from '../../components/AppHeader';
 import { CategoryChips } from '../../components/CategoryChips';
 import { SearchBar } from '../../components/SearchBar';
 import { TaskItem } from '../../components/TaskItem';
-import { CATEGORIES, CATEGORY_LABELS } from '../../constants/task';
 import { useTasks } from '../../context/TasksContext';
 import { colors, maxContentWidth, spacing, typography } from '../../theme';
 import { compareDay } from '../../utils/date';
 
 const ALL = 'All Task';
-const CHIPS = [
-  { value: ALL, label: ALL },
-  ...CATEGORIES.map((value) => ({ value, label: CATEGORY_LABELS[value] })),
-];
 
 // Màn hình chính: tìm kiếm, chip danh mục, danh sách việc theo Future / Today / Previous
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { tasks, loading, updateTask } = useTasks();
+  const { tasks, categories, loading, updateTask } = useTasks();
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState(ALL);
+  const [selectedCategory, setCategory] = useState(ALL);
+
+  // Chip danh mục lấy từ tab Category. Danh mục đang chọn bị xóa/đổi tên thì quay về All Task
+  const chips = [{ value: ALL, label: ALL }, ...categories.map((c) => ({ value: c.name, label: c.name }))];
+  const category = chips.some((c) => c.value === selectedCategory) ? selectedCategory : ALL;
 
   // Đảo trạng thái hoàn thành
   const toggleTask = (id: number) => {
@@ -58,7 +57,7 @@ export default function HomeScreen() {
         {/* Nội dung căn giữa, giới hạn bề rộng để đẹp trên iPad */}
         <View style={styles.content}>
           <SearchBar value={query} onChangeText={setQuery} />
-          <CategoryChips categories={CHIPS} selected={category} onSelect={setCategory} />
+          <CategoryChips categories={chips} selected={category} onSelect={setCategory} />
 
           {!loading && sections.length === 0 && (
             <Text style={styles.empty}>{tasks.length === 0 ? 'No tasks yet. Tap + to add one' : 'No tasks found'}</Text>

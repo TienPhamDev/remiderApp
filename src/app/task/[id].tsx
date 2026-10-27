@@ -7,14 +7,7 @@ import { DateTimePill } from '../../components/DateTimePill';
 import { Icon } from '../../components/Icon';
 import { InfoRow } from '../../components/InfoRow';
 import { ValuePill } from '../../components/ValuePill';
-import {
-  CATEGORIES,
-  CATEGORY_LABELS,
-  nextOf,
-  PRIORITIES,
-  PRIORITY_COLORS,
-  PRIORITY_LABELS,
-} from '../../constants/task';
+import { nextOf, PRIORITIES, PRIORITY_COLORS, PRIORITY_LABELS } from '../../constants/task';
 import { useTasks } from '../../context/TasksContext';
 import { colors, maxContentWidth, radius, spacing, typography } from '../../theme';
 
@@ -23,7 +16,7 @@ export default function TaskInfoScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { tasks, updateTask, removeTask } = useTasks();
+  const { tasks, categories, updateTask, removeTask } = useTasks();
   const task = tasks.find((t) => t.id === Number(id));
 
   // Tiêu đề và ghi chú sửa trên bản nháp, lưu khi rời ô nhập
@@ -108,8 +101,10 @@ export default function TaskInfoScreen() {
           <View style={styles.rows}>
             <InfoRow icon="category" label="Category">
               <ValuePill
-                text={CATEGORY_LABELS[task.category] ?? task.category}
-                onPress={() => updateTask(task.id, { category: nextOf(CATEGORIES, task.category) })}
+                text={task.category}
+                onPress={() =>
+                  updateTask(task.id, { category: nextOf(categories.map((c) => c.name), task.category) })
+                }
               />
             </InfoRow>
             <InfoRow icon="calendar" label="Due Date">

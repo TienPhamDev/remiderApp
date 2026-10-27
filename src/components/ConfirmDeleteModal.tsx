@@ -6,10 +6,11 @@ type Props = {
   visible: boolean;
   onCancel: () => void;
   onConfirm: () => void;
+  message?: string;
 };
 
 // Hộp thoại xác nhận xóa việc
-export function ConfirmDeleteModal({ visible, onCancel, onConfirm }: Props) {
+export function ConfirmDeleteModal({ visible, onCancel, onConfirm, message }: Props) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <View style={styles.backdrop}>
@@ -19,7 +20,7 @@ export function ConfirmDeleteModal({ visible, onCancel, onConfirm }: Props) {
           </View>
           <Text style={styles.title}>Are You Sure?</Text>
           <Text style={styles.message}>
-            Do you really want to delete this task?{'\n'}this process can't be undone.
+            {message ?? "Do you really want to delete this task?\nthis process can't be undone."}
           </Text>
           <View style={styles.buttons}>
             <Pressable style={[styles.button, styles.cancel]} onPress={onCancel}>
