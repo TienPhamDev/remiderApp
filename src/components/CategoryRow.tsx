@@ -1,20 +1,25 @@
 import { ComponentRef, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { GestureResponderHandlers, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing, typography } from '../theme';
 import { Category } from '../types/category';
 import { Icon } from './Icon';
 import { Anchor, PopupMenu } from './PopupMenu';
 
+// Chiều cao cố định của một dòng (để danh sách kéo thả tính vị trí)
+export const CATEGORY_ROW_HEIGHT = 64;
+
 type Props = {
   category: Category;
+  handleProps: GestureResponderHandlers; // gắn vào tay nắm kéo thả
+  dragging: boolean;
   doneCount: number;
   totalCount: number;
   onEdit: (category: Category) => void;
   onDelete: (category: Category) => void;
 };
 
-// Một danh mục: tên, số việc đã xong / tổng, nút "•••" mở menu Edit / Delete
-export function CategoryRow({ category, doneCount, totalCount, onEdit, onDelete }: Props) {
+// Một danh mục: tay nắm kéo thả, tên, số việc đã xong / tổng, nút "•••" mở menu Edit / Delete
+export function CategoryRow({ category, handleProps, dragging, doneCount, totalCount, onEdit, onDelete }: Props) {
   const buttonRef = useRef<ComponentRef<typeof Pressable>>(null);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
 
@@ -22,7 +27,10 @@ export function CategoryRow({ category, doneCount, totalCount, onEdit, onDelete 
   const openMenu = () => buttonRef.current?.measureInWindow((x, y, width, height) => setAnchor({ x, y, width, height }));
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, dragging && styles.cardDragging]}>
+      <View style={styles.handle} hitSlop={8} accessibilityLabel={`Reorder ${category.name}`} {...handleProps}>
+        <Icon name="grip" color={colors.textMuted} />
+      </View>
       <View style={styles.texts}>
         <Text style={styles.name} numberOfLines={1}>
           {category.name}
@@ -54,15 +62,18 @@ export function CategoryRow({ category, doneCount, totalCount, onEdit, onDelete 
 
 const styles = StyleSheet.create({
   card: {
-    minHeight: 56,
+    height: CATEGORY_ROW_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     paddingHorizontal: spacing.md,
-    paddingVertical: 10,
     borderRadius: radius.card,
+    borderWidth: 1,
+    borderColor: 'transparent',
     backgroundColor: colors.card,
   },
+  cardDragging: { borderColor: colors.primary },
+  handle: { marginLeft: -8 },
   texts: { flex: 1 },
   name: { ...typography.body, color: colors.text },
   count: { ...typography.caption, color: colors.accent },

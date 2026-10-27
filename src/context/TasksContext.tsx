@@ -8,6 +8,7 @@ import {
   listCategories,
   listTasks,
   renameCategory as renameCategoryInDb,
+  saveCategoryOrder,
   saveTask,
 } from '../db/tasksDb';
 import { Category } from '../types/category';
@@ -27,6 +28,7 @@ type TasksContextValue = {
   addCategory: (name: string) => Promise<boolean>;
   renameCategory: (id: number, name: string) => Promise<boolean>;
   removeCategory: (id: number) => Promise<boolean>;
+  reorderCategories: (ids: number[]) => Promise<boolean>;
 };
 
 const TasksContext = createContext<TasksContextValue | null>(null);
@@ -142,6 +144,16 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       setAll(await listTasks());
     }, 'Could not delete the category. Please try again.');
 
+  // ids là thứ tự mới của toàn bộ danh mục
+  const reorderCategories = (ids: number[]) =>
+    enqueue(async () => {
+      const byId = new Map(categoriesRef.current.map((c) => [c.id, c]));
+      const next = ids.map((id) => byId.get(id)).filter((c): c is Category => c !== undefined);
+      if (next.length !== categoriesRef.current.length) throw new Error('Invalid category order');
+      await saveCategoryOrder(ids);
+      setAllCategories(next);
+    }, 'Could not save the new order. Please try again.');
+
   return (
     <TasksContext.Provider
       value={{
@@ -154,6 +166,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         addCategory,
         renameCategory,
         removeCategory,
+        reorderCategories,
       }}
     >
       {children}

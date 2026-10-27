@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader } from '../../components/AppHeader';
-import { CategoryRow } from '../../components/CategoryRow';
+import { CATEGORY_ROW_HEIGHT, CategoryRow } from '../../components/CategoryRow';
 import { ConfirmDeleteModal } from '../../components/ConfirmDeleteModal';
 import { Icon } from '../../components/Icon';
+import { ReorderableList } from '../../components/ReorderableList';
 import { useTasks } from '../../context/TasksContext';
 import { colors, maxContentWidth, radius, spacing, typography } from '../../theme';
 import { Category } from '../../types/category';
@@ -14,7 +15,7 @@ import { Category } from '../../types/category';
 export default function CategoryScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { tasks, categories, removeCategory } = useTasks();
+  const { tasks, categories, removeCategory, reorderCategories } = useTasks();
   const [deleting, setDeleting] = useState<Category | null>(null);
 
   // Danh mục còn lại nhận các việc của danh mục bị xóa
@@ -47,19 +48,27 @@ export default function CategoryScreen() {
           <Text style={styles.sectionTitle}>Manage Categories</Text>
 
           <View style={styles.list}>
-            {categories.map((category) => {
-              const inCategory = tasks.filter((t) => t.category === category.name);
-              return (
-                <CategoryRow
-                  key={category.id}
-                  category={category}
-                  doneCount={inCategory.filter((t) => t.done).length}
-                  totalCount={inCategory.length}
-                  onEdit={(c) => router.push({ pathname: '/category-form', params: { id: String(c.id) } })}
-                  onDelete={askDelete}
-                />
-              );
-            })}
+            <ReorderableList
+              items={categories}
+              keyOf={(category) => category.id}
+              itemHeight={CATEGORY_ROW_HEIGHT}
+              gap={spacing.sm}
+              onReorder={(next) => reorderCategories(next.map((c) => c.id))}
+              renderItem={(category, handleProps, dragging) => {
+                const inCategory = tasks.filter((t) => t.category === category.name);
+                return (
+                  <CategoryRow
+                    category={category}
+                    handleProps={handleProps}
+                    dragging={dragging}
+                    doneCount={inCategory.filter((t) => t.done).length}
+                    totalCount={inCategory.length}
+                    onEdit={(c) => router.push({ pathname: '/category-form', params: { id: String(c.id) } })}
+                    onDelete={askDelete}
+                  />
+                );
+              }}
+            />
 
             <Pressable style={styles.create} onPress={() => router.push('/category-form')}>
               <Icon name="add" color={colors.textMuted} />

@@ -20,7 +20,8 @@ export type IconName =
   | 'clock'
   | 'bell'
   | 'edit'
-  | 'more';
+  | 'more'
+  | 'grip';
 
 type Props = {
   name: IconName;
@@ -108,6 +109,11 @@ export function Icon({ name, size = 24, color = colors.text }: Props) {
           <Circle cx={5} cy={12} r={1.6} fill={color} />
           <Circle cx={12} cy={12} r={1.6} fill={color} />
           <Circle cx={19} cy={12} r={1.6} fill={color} />
+        </>
+      )}
+      {name === 'grip' && (
+        <>
+          {[8, 12, 16].flatMap((cy) => [9, 15].map((cx) => <Circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={1.4} fill={color} />))}
         </>
       )}
       {name === 'setting' && (

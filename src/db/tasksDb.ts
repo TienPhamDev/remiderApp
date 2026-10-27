@@ -141,3 +141,13 @@ export async function deleteCategory(id: number, name: string, fallbackName: str
     await db.runAsync('DELETE FROM categories WHERE id = ?', id);
   });
 }
+
+// Lưu thứ tự danh mục theo thứ tự id trong mảng
+export async function saveCategoryOrder(ids: number[]): Promise<void> {
+  const db = await getDb();
+  await db.withTransactionAsync(async () => {
+    for (let position = 0; position < ids.length; position++) {
+      await db.runAsync('UPDATE categories SET position = ? WHERE id = ?', position, ids[position]);
+    }
+  });
+}
