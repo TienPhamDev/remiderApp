@@ -50,3 +50,10 @@ export function addMonths(date: Date, delta: number): Date {
   const lastDay = new Date(date.getFullYear(), date.getMonth() + delta + 1, 0).getDate();
   return new Date(date.getFullYear(), date.getMonth() + delta, Math.min(date.getDate(), lastDay));
 }
+
+// 7 ngày của tuần (Chủ nhật đến thứ Bảy) cách tuần này `weeksAgo` tuần
+export function weekDays(weeksAgo = 0): Date[] {
+  const today = new Date();
+  const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() - weeksAgo * 7);
+  return Array.from({ length: 7 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
+}

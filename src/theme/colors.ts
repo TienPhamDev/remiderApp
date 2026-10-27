@@ -22,6 +22,11 @@ export const colors = {
   textMuted: '#616161', // ngày, nhãn phụ
   textDone: '#7B7B7B', // việc đã hoàn thành (gạch ngang)
 
+  // Biểu đồ
+  panel: '#1E1E1E', // thẻ biểu đồ và ô thống kê
+  bar: '#F3EBFE',
+  barActive: '#AB7AF8',
+
   // Ô nhập, lớp phủ, độ ưu tiên
   input: '#191919',
   placeholder: '#4F4F4F',

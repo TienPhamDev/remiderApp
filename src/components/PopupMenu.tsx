@@ -4,7 +4,7 @@ import { Icon, IconName } from './Icon';
 
 export type MenuItem = {
   label: string;
-  icon: IconName;
+  icon?: IconName;
   color?: string;
   onPress: () => void;
 };
@@ -35,7 +35,7 @@ export function PopupMenu({ anchor, items, onClose }: Props) {
                 item.onPress();
               }}
             >
-              <Icon name={item.icon} color={item.color ?? colors.text} />
+              {item.icon && <Icon name={item.icon} color={item.color ?? colors.text} />}
               <Text style={[styles.label, item.color ? { color: item.color } : null]}>{item.label}</Text>
             </Pressable>
           ))}
